@@ -1,0 +1,497 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:views="using:Presenter.Views"
+        xmlns:editor="using:Presenter.Editor"
+        xmlns:flow="using:Presenter.Flow"
+        x:Class="Presenter.Views.MainWindow"
+        Width="1280" Height="780" MinWidth="980" MinHeight="640"
+        WindowStartupLocation="CenterScreen"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaTitleBarHeightHint="53"
+        WindowDecorations="BorderOnly"
+        Background="#F6F8F6"
+        Title="Presenter">
+    <Grid RowDefinitions="53,*,32">
+        <Border Grid.Row="0" Background="#FEFFFE" BorderBrush="#DFE7E1" BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="Auto,*,Auto" Margin="14,0">
+                <StackPanel x:Name="TopLeft" Orientation="Horizontal" VerticalAlignment="Center" Spacing="10">
+                    <Border Background="#174B36" Width="29" Height="29" CornerRadius="7">
+                        <views:IconGlyph Glyph="presentation" Width="19" Height="19" Ink="White"/>
+                    </Border>
+                    <TextBlock Text="Presenter" FontSize="15" FontWeight="Bold" VerticalAlignment="Center"/>
+                    <Border Classes="separator"/>
+                    <Button Classes="tool" AutomationProperties.Name="Diapo précédente" ToolTip.Tip="Diapo précédente" Click="OnPreviousSlide">
+                        <views:IconGlyph Glyph="arrow-left"/>
+                    </Button>
+                    <Button Classes="tool" AutomationProperties.Name="Diapo suivante" ToolTip.Tip="Diapo suivante" Click="OnNextSlide">
+                        <views:IconGlyph Glyph="arrow-right"/>
+                    </Button>
+                </StackPanel>
+                <Border Grid.Column="1" Background="Transparent"
+                        WindowDecorationProperties.ElementRole="TitleBar">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="9"
+                                IsHitTestVisible="False" Margin="9,0">
+                        <TextBlock x:Name="DeckTitle" FontSize="13" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" MaxWidth="220"/>
+                        <Border Width="4" Height="4" CornerRadius="2" Background="#8FACA0" VerticalAlignment="Center"/>
+                        <TextBlock Classes="meta" Text="ÉDITION" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Spacing="5">
+                    <Button Classes="tool" AutomationProperties.Name="Fichier" ToolTip.Tip="Fichier">
+                        <views:IconGlyph Glyph="folder-open"/>
+                        <Button.Flyout>
+                            <MenuFlyout>
+                                <MenuItem Header="Nouveau" Click="OnNew"/>
+                                <MenuItem Header="Ouvrir…" Click="OnOpen"/>
+                                <MenuItem Header="Enregistrer sous…" Click="OnSaveAs"/>
+                                <MenuItem Header="Ouvrir le dossier des thèmes" Click="OnOpenThemeFolder"/>
+                            </MenuFlyout>
+                        </Button.Flyout>
+                    </Button>
+                    <Button x:Name="UndoButton" Classes="tool" AutomationProperties.Name="Annuler" ToolTip.Tip="Annuler" Click="OnUndo">
+                        <views:IconGlyph Glyph="undo"/>
+                    </Button>
+                    <Button x:Name="RedoButton" Classes="tool" AutomationProperties.Name="Rétablir" ToolTip.Tip="Rétablir" Click="OnRedo">
+                        <views:IconGlyph Glyph="redo"/>
+                    </Button>
+                    <Border Classes="separator"/>
+                    <Button Classes="tool outline" AutomationProperties.Name="Enregistrer" ToolTip.Tip="Enregistrer" Click="OnSave">
+                        <StackPanel Classes="toolContent">
+                            <views:IconGlyph Glyph="save"/>
+                            <TextBlock Text="Enregistrer" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Classes="primary" AutomationProperties.Name="Présenter" ToolTip.Tip="Présenter" Click="OnPresentDeck">
+                        <StackPanel Classes="toolContent">
+                            <views:IconGlyph Glyph="presentation-play" Ink="White"/>
+                            <TextBlock Text="Présenter" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <StackPanel x:Name="WindowButtons" Orientation="Horizontal" Spacing="1">
+                        <Border Classes="separator"/>
+                        <Button Classes="tool" AutomationProperties.Name="Réduire" ToolTip.Tip="Réduire" Click="OnMinimize">
+                            <views:IconGlyph Glyph="minus"/>
+                        </Button>
+                        <Button Classes="tool" AutomationProperties.Name="Agrandir ou restaurer" ToolTip.Tip="Agrandir ou restaurer" Click="OnMaximize">
+                            <views:IconGlyph Glyph="maximize"/>
+                        </Button>
+                        <Button Classes="tool" AutomationProperties.Name="Fermer" ToolTip.Tip="Fermer" Click="OnClose">
+                            <views:IconGlyph Glyph="close"/>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1" ColumnDefinitions="194,*,330">
+            <Border Grid.Column="0" Background="#F9FBF9" BorderBrush="#DFE7E1" BorderThickness="0,0,1,0">
+                <Grid RowDefinitions="Auto,*,Auto">
+                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="17,15,12,11">
+                        <StackPanel VerticalAlignment="Center" Spacing="3">
+                            <TextBlock Text="Diapositives" FontSize="14" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="SlideCount" Classes="meta"/>
+                        </StackPanel>
+                        <Button Grid.Column="1" Classes="primary" AutomationProperties.Name="Ajouter une diapo" ToolTip.Tip="Ajouter une diapo">
+                            <views:IconGlyph Glyph="plus" Ink="White"/>
+                            <Button.Flyout>
+                                <MenuFlyout Opening="OnOpeningLayouts"/>
+                            </Button.Flyout>
+                        </Button>
+                    </Grid>
+                    <ScrollViewer x:Name="SlideScroll" Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
+                        <ItemsControl x:Name="SlideList" Margin="12,2,12,12">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Spacing="8"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="views:SlideCard">
+                                    <Button Classes="tool slideCard" Classes.active="{Binding Active}" Padding="6"
+                                            Click="OnSelectSlide" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                                        <Button.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Dupliquer" Tag="duplicate" Click="OnSlideMenu"/>
+                                                <MenuItem Header="Monter" Tag="up" Click="OnSlideMenu"/>
+                                                <MenuItem Header="Descendre" Tag="down" Click="OnSlideMenu"/>
+                                                <MenuItem Header="Supprimer" Tag="delete" Click="OnSlideMenu"/>
+                                            </ContextMenu>
+                                        </Button.ContextMenu>
+                                        <StackPanel Spacing="6">
+                                            <Border Height="83" ClipToBounds="True" CornerRadius="4" Background="White"
+                                                    BorderBrush="#D5E1D9" BorderThickness="1">
+                                                <ContentControl Content="{Binding Preview}" IsHitTestVisible="False"/>
+                                            </Border>
+                                            <Grid ColumnDefinitions="24,*">
+                                                <TextBlock Classes="meta" Text="{Binding Number}" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="1" FontSize="11" FontWeight="Medium" Text="{Binding Name}"
+                                                           TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                    <Border Grid.Row="2" BorderBrush="#DFE7E1" BorderThickness="0,1,0,0" Padding="15,13">
+                        <StackPanel Spacing="7">
+                            <TextBlock Classes="meta" Text="THÈME DE PRÉSENTATION"/>
+                            <ComboBox x:Name="ThemePicker"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Column="1" RowDefinitions="52,*,66" Background="#EEF3EF">
+                <Border Grid.Row="0" Background="#FBFDFB" BorderBrush="#DFE7E1" BorderThickness="0,0,0,1">
+                    <Grid ColumnDefinitions="*,Auto" Margin="13,0">
+                        <StackPanel Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
+                            <Button Classes="tool" AutomationProperties.Name="Texte">
+                                <StackPanel Classes="toolContent">
+                                    <views:IconGlyph Glyph="text"/>
+                                    <TextBlock Text="Texte"/>
+                                </StackPanel>
+                                <Button.Flyout>
+                                    <MenuFlyout>
+                                        <MenuItem Header="Zone de texte" Click="OnInsertText"/>
+                                        <MenuItem Header="Titre" Click="OnInsertTitle"/>
+                                        <MenuItem Header="Sous-titre" Click="OnInsertSubtitle"/>
+                                        <MenuItem Header="Rubrique" Click="OnInsertSection"/>
+                                        <MenuItem Header="Liste à puces" Click="OnInsertBullets"/>
+                                        <MenuItem Header="Liste numérotée" Click="OnInsertNumbers"/>
+                                    </MenuFlyout>
+                                </Button.Flyout>
+                            </Button>
+                            <Button Classes="tool" AutomationProperties.Name="Image" ToolTip.Tip="Image" Click="OnInsertImage">
+                                <StackPanel Classes="toolContent">
+                                    <views:IconGlyph Glyph="image"/>
+                                    <TextBlock Text="Image" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Classes="tool" AutomationProperties.Name="Code" ToolTip.Tip="Code" Click="OnInsertCode">
+                                <StackPanel Classes="toolContent">
+                                    <views:IconGlyph Glyph="code-block"/>
+                                    <TextBlock Text="Code" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Classes="tool" AutomationProperties.Name="Fenêtre" ToolTip.Tip="Fenêtre" Click="OnInsertWindow">
+                                <StackPanel Classes="toolContent">
+                                    <views:IconGlyph Glyph="browser"/>
+                                    <TextBlock Text="Fenêtre" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                            <Border Classes="separator"/>
+                            <Button x:Name="FrameButton" Classes="tool active" AutomationProperties.Name="Poignées classiques" ToolTip.Tip="Poignées classiques" Click="OnClassicHandles">
+                                <views:IconGlyph Glyph="cursor-click"/>
+                            </Button>
+                            <Button x:Name="GizmoButton" Classes="tool" AutomationProperties.Name="Gizmo de transformation" ToolTip.Tip="Gizmo de transformation" Click="OnGizmo">
+                                <views:IconGlyph Glyph="arrows-expand"/>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                <Grid x:Name="WorkArea" Grid.Row="1" ClipToBounds="True">
+                    <views:WorkspaceDots IsHitTestVisible="False"/>
+                    <Grid RowDefinitions="*,Auto,*" Margin="25,12">
+                        <Grid Grid.Row="1" RowDefinitions="Auto,Auto,Auto">
+                            <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,9">
+                                <TextBlock x:Name="CanvasTitle" Classes="meta"/>
+                                <TextBlock Grid.Column="1" Classes="meta" Text="16:9"/>
+                            </Grid>
+                            <Border x:Name="StageFrame" Grid.Row="1" Background="White" CornerRadius="6" ClipToBounds="True"
+                                    BoxShadow="0 10 30 0 #1831473D"
+                                    BorderBrush="#BCD0C4" BorderThickness="1"
+                                    HorizontalAlignment="Center">
+                                <views:SlideSurface x:Name="Surface"/>
+                            </Border>
+                            <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="0,12,0,0">
+                                <TextBlock x:Name="CanvasLayout" FontSize="12" Foreground="#577267" VerticalAlignment="Center"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="3" VerticalAlignment="Center">
+                                    <Button Classes="tool" AutomationProperties.Name="Réduire le zoom" ToolTip.Tip="Réduire le zoom" Click="OnZoomOut">
+                                        <views:IconGlyph Glyph="minus"/>
+                                    </Button>
+                                    <Button Classes="tool" Click="OnZoomReset" AutomationProperties.Name="Zoom automatique">
+                                        <TextBlock x:Name="ZoomLabel" Classes="meta" Text="Auto"/>
+                                    </Button>
+                                    <Button Classes="tool" AutomationProperties.Name="Augmenter le zoom" ToolTip.Tip="Augmenter le zoom" Click="OnZoomIn">
+                                        <views:IconGlyph Glyph="plus"/>
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Border Grid.Row="2" Background="#FBFDFB" BorderBrush="#DFE7E1" BorderThickness="0,1,0,0">
+                    <Grid RowDefinitions="Auto,*" Margin="14,8">
+                        <TextBlock Text="ÉLÉMENTS" Classes="meta" Margin="0,0,0,4"/>
+                        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                            <Panel>
+                                <TextBlock x:Name="EmptyElements" IsVisible="False" Text="Aucun élément" FontSize="12"
+                                           Foreground="#577267" VerticalAlignment="Center"/>
+                                <ItemsControl x:Name="ElementsList">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" Spacing="5"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="views:ElementChip">
+                                            <Button Classes="tool outline" Classes.active="{Binding Active}" Click="OnSelectElement">
+                                                <Button.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="Dupliquer" Tag="duplicate" Click="OnElementMenu"/>
+                                                        <MenuItem Header="Premier plan" Tag="front" Click="OnElementMenu"/>
+                                                        <MenuItem Header="Arrière-plan" Tag="back" Click="OnElementMenu"/>
+                                                        <MenuItem Header="Supprimer" Tag="delete" Click="OnElementMenu"/>
+                                                    </ContextMenu>
+                                                </Button.ContextMenu>
+                                                <StackPanel Classes="toolContent">
+                                                    <views:IconGlyph Glyph="{Binding Icon}"/>
+                                                    <TextBlock Text="{Binding Id}" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Panel>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Border Grid.Column="2" BorderBrush="#DFE7E1" BorderThickness="1,0,0,0" Background="#FEFFFE">
+                <Grid RowDefinitions="52,*">
+                    <Border Grid.Row="0" BorderBrush="#DFE7E1" BorderThickness="0,0,0,1">
+                        <StackPanel Orientation="Horizontal" Margin="14,0" Spacing="10">
+                            <Button x:Name="DescriptionTab" Classes="tool" AutomationProperties.Name="Description" ToolTip.Tip="Description" Click="OnDescriptionTab">
+                                <StackPanel Classes="toolContent">
+                                    <views:IconGlyph Glyph="adjustments"/>
+                                    <TextBlock Text="Description" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="CodeTab" Classes="tool active" AutomationProperties.Name="Code Flow" ToolTip.Tip="Code Flow" Click="OnCodeTab">
+                                <StackPanel Classes="toolContent">
+                                    <views:IconGlyph Glyph="code-block"/>
+                                    <TextBlock Text="Code Flow" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+                    <ScrollViewer x:Name="DescriptionPanel" Grid.Row="1" IsVisible="False" HorizontalScrollBarVisibility="Disabled">
+                        <Grid Margin="15,16">
+                            <StackPanel x:Name="SlideInspector" Spacing="8">
+                                <TextBlock Classes="meta" Text="PRÉSENTATION"/>
+                                <StackPanel Spacing="4">
+                                    <TextBlock Classes="fieldLabel" Text="Nom"/>
+                                    <TextBox x:Name="DeckNameField" AutomationProperties.Name="Nom de la présentation" />
+                                </StackPanel>
+                                <Border Classes="inspectorDivider"/>
+                                <TextBlock Classes="meta" Text="DIAPOSITIVE"/>
+                                <StackPanel Spacing="4">
+                                    <TextBlock Classes="fieldLabel" Text="Nom de la diapo"/>
+                                    <TextBox x:Name="SlideNameField" AutomationProperties.Name="Nom de la diapo" />
+                                </StackPanel>
+                                <StackPanel Spacing="4">
+                                    <TextBlock Classes="fieldLabel" Text="Fond"/>
+                                    <ComboBox x:Name="LayoutField" AutomationProperties.Name="Fond"/>
+                                </StackPanel>
+                                <StackPanel Spacing="4">
+                                    <TextBlock Classes="fieldLabel" Text="Notes (Markdown)"/>
+                                    <TextBox x:Name="NotesField" AutomationProperties.Name="Notes de la diapo" MinHeight="100" AcceptsReturn="True" TextWrapping="Wrap"/>
+                                </StackPanel>
+                                <Button Classes="tool" Click="OnPreviewNotes" AutomationProperties.Name="Aperçu des notes" ToolTip.Tip="Aperçu des notes">
+                                    <StackPanel Classes="toolContent">
+                                        <views:IconGlyph Glyph="eye"/>
+                                        <TextBlock Text="Aperçu des notes"/>
+                                    </StackPanel>
+                                </Button>
+                                <Border Classes="inspectorDivider"/>
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <Button Classes="tool" Click="OnDuplicateSlide" AutomationProperties.Name="Dupliquer" ToolTip.Tip="Dupliquer">
+                                        <StackPanel Classes="toolContent">
+                                            <views:IconGlyph Glyph="duplicate"/>
+                                            <TextBlock Text="Dupliquer"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Classes="tool" Click="OnDeleteSlide" AutomationProperties.Name="Supprimer" ToolTip.Tip="Supprimer">
+                                        <StackPanel Classes="toolContent">
+                                            <views:IconGlyph Glyph="trash"/>
+                                            <TextBlock Text="Supprimer"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel x:Name="ElementInspector" Spacing="8" IsVisible="False">
+                                <Grid ColumnDefinitions="*,Auto,Auto">
+                                    <TextBlock Classes="meta" Text="ÉLÉMENT" VerticalAlignment="Center"/>
+                                    <Button Classes="tool" Grid.Column="1" Click="OnDuplicateElement" AutomationProperties.Name="Dupliquer l’élément" ToolTip.Tip="Dupliquer l’élément">
+                                        <views:IconGlyph Glyph="duplicate"/>
+                                    </Button>
+                                    <Button Classes="tool" Grid.Column="2" Click="OnDeleteElement" AutomationProperties.Name="Supprimer l’élément" ToolTip.Tip="Supprimer l’élément">
+                                        <views:IconGlyph Glyph="trash"/>
+                                    </Button>
+                                </Grid>
+                                <StackPanel Spacing="4">
+                                    <TextBlock Classes="fieldLabel" Text="Identifiant JavaScript"/>
+                                    <TextBox x:Name="ElementIdField" AutomationProperties.Name="Identifiant de l’élément" />
+                                </StackPanel>
+                                <StackPanel x:Name="ImageFields" Spacing="8">
+                                    <TextBlock x:Name="ImageFilename" Classes="fieldLabel" TextTrimming="CharacterEllipsis"/>
+                                    <Button Classes="tool" Click="OnReplaceImage" AutomationProperties.Name="Remplacer l’image" ToolTip.Tip="Remplacer l’image">
+                                        <StackPanel Classes="toolContent">
+                                            <views:IconGlyph Glyph="image"/>
+                                            <TextBlock Text="Remplacer l’image"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                                <StackPanel x:Name="TextFields" Spacing="8">
+                                    <StackPanel x:Name="CaptionPanel" Spacing="4">
+                                        <TextBlock Classes="fieldLabel" Text="Titre de la fenêtre"/>
+                                        <TextBox x:Name="CaptionField" AutomationProperties.Name="Titre de la fenêtre" />
+                                    </StackPanel>
+                                    <StackPanel Spacing="4">
+                                        <TextBlock x:Name="ContentLabel" Classes="fieldLabel"/>
+                                        <TextBox x:Name="ContentField" AutomationProperties.Name="Contenu de l’élément" MinHeight="105" AcceptsReturn="True" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <StackPanel x:Name="MarkdownTools" Orientation="Horizontal" Spacing="4">
+                                        <Button Classes="tool" Click="OnMarkdownBold" AutomationProperties.Name="Mettre la sélection en gras" ToolTip.Tip="Mettre la sélection en gras">
+                                            <views:IconGlyph Glyph="bold"/>
+                                        </Button>
+                                        <Button Classes="tool" Click="OnMarkdownItalic" AutomationProperties.Name="Mettre la sélection en italique" ToolTip.Tip="Mettre la sélection en italique">
+                                            <views:IconGlyph Glyph="italic"/>
+                                        </Button>
+                                        <Button Classes="tool" Click="OnMarkdownCode" AutomationProperties.Name="Insérer du code en ligne" ToolTip.Tip="Insérer du code en ligne">
+                                            <views:IconGlyph Glyph="code-block"/>
+                                        </Button>
+                                        <Button Classes="tool" Click="OnMarkdownBullet" AutomationProperties.Name="Insérer une puce" ToolTip.Tip="Insérer une puce">
+                                            <views:IconGlyph Glyph="list-box"/>
+                                        </Button>
+                                    </StackPanel>
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Classes="fieldLabel" Text="Police"/>
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="5">
+                                            <ComboBox x:Name="FontField" MaxDropDownHeight="250" AutomationProperties.Name="Police"/>
+                                            <Button Grid.Column="1" Classes="tool" AutomationProperties.Name="Google Fonts et import de polices" ToolTip.Tip="Google Fonts et import de polices">
+                                                <views:IconGlyph Glyph="globe"/>
+                                                <Button.Flyout>
+                                                    <MenuFlyout>
+                                                        <MenuItem Header="Parcourir Google Fonts" Click="OnBrowseFonts"/>
+                                                        <MenuItem Header="Importer un fichier TTF ou OTF…" Click="OnImportFont"/>
+                                                    </MenuFlyout>
+                                                </Button.Flyout>
+                                            </Button>
+                                        </Grid>
+                                    </StackPanel>
+                                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Classes="fieldLabel" Text="Taille"/>
+                                            <TextBox x:Name="FontSizeField" AutomationProperties.Name="Taille de police" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" x:Name="ColorPanel" Spacing="4">
+                                            <TextBlock Classes="fieldLabel" Text="Couleur"/>
+                                            <TextBox x:Name="ColorField" AutomationProperties.Name="Couleur en hexadécimal" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <StackPanel Orientation="Horizontal" Spacing="5">
+                                        <Button x:Name="BoldButton" Classes="tool" Click="OnFontBold" AutomationProperties.Name="Gras" ToolTip.Tip="Gras">
+                                            <views:IconGlyph Glyph="bold"/>
+                                        </Button>
+                                        <Button x:Name="ItalicButton" Classes="tool" Click="OnFontItalic" AutomationProperties.Name="Italique" ToolTip.Tip="Italique">
+                                            <views:IconGlyph Glyph="italic"/>
+                                        </Button>
+                                        <ComboBox x:Name="AlignmentField" MinWidth="100" AutomationProperties.Name="Alignement">
+                                            <ComboBoxItem Content="Gauche"/>
+                                            <ComboBoxItem Content="Centré"/>
+                                            <ComboBoxItem Content="Droite"/>
+                                        </ComboBox>
+                                    </StackPanel>
+                                </StackPanel>
+                                <Border Classes="inspectorDivider"/>
+                                <TextBlock Classes="meta" Text="TRANSFORMATION"/>
+                                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Classes="fieldLabel" Text="X"/>
+                                        <TextBox x:Name="XField" AutomationProperties.Name="Position X" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Spacing="4">
+                                        <TextBlock Classes="fieldLabel" Text="Y"/>
+                                        <TextBox x:Name="YField" AutomationProperties.Name="Position Y" />
+                                    </StackPanel>
+                                </Grid>
+                                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Classes="fieldLabel" Text="Largeur"/>
+                                        <TextBox x:Name="WidthField" AutomationProperties.Name="Largeur" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Spacing="4">
+                                        <TextBlock Classes="fieldLabel" Text="Hauteur"/>
+                                        <TextBox x:Name="HeightField" AutomationProperties.Name="Hauteur" />
+                                    </StackPanel>
+                                </Grid>
+                                <StackPanel Spacing="4">
+                                    <TextBlock Classes="fieldLabel" Text="Rotation (°)"/>
+                                    <TextBox x:Name="AngleField" AutomationProperties.Name="Rotation en degrés" />
+                                </StackPanel>
+                                <CheckBox x:Name="HiddenField" Content="Masqué au début de la projection"/>
+                            </StackPanel>
+                        </Grid>
+                    </ScrollViewer>
+                    <Grid x:Name="CodePanel" Grid.Row="1" RowDefinitions="Auto,*,Auto" Margin="14,14">
+                        <Grid ColumnDefinitions="*,Auto" Margin="1,0,0,10">
+                            <StackPanel Classes="toolContent">
+                                <views:IconGlyph Glyph="file"/>
+                                <TextBlock x:Name="ScriptName" Classes="meta" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <Button Grid.Column="1" Classes="tool" Click="OnTestSlide">
+                                <StackPanel Classes="toolContent">
+                                    <views:IconGlyph Glyph="play-circle"/>
+                                    <TextBlock Text="Tester"/>
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+                        <Border Grid.Row="1" BorderBrush="#DBE7DF" BorderThickness="1" Background="#F7FAF8"
+                                CornerRadius="8" Padding="1,9,1,3" ClipToBounds="True">
+                            <editor:FlowEditor x:Name="CodeEditor"/>
+                        </Border>
+                        <Border Grid.Row="2" BorderBrush="#DFE7E1" BorderThickness="0,1,0,0" Margin="0,13,0,0" Padding="0,10,0,0">
+                            <StackPanel Spacing="8">
+                                <TextBlock x:Name="ScriptStatus" TextWrapping="Wrap" FontSize="11"/>
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Classes="label" Text="Fonctions disponibles" VerticalAlignment="Center"/>
+                                    <TextBlock Classes="meta" Grid.Column="1" Text="Ctrl + Espace" VerticalAlignment="Center"/>
+                                </Grid>
+                                <ItemsControl x:Name="ApiChips">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel ItemSpacing="4" LineSpacing="4"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="flow:FlowMethod">
+                                            <Button Classes="tool outline" Padding="5,2" MinHeight="22"
+                                                    ToolTip.Tip="{Binding Description}" Click="OnInsertApiCall">
+                                                <TextBlock Classes="meta" Text="{Binding Name, StringFormat='{}{0}()'}"/>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="2" Background="#FBFDFB" BorderBrush="#DFE7E1" BorderThickness="0,1,0,0" Padding="14,0">
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">
+                    <Border x:Name="StatusDot" Width="6" Height="6" CornerRadius="3" VerticalAlignment="Center" Background="#329467"/>
+                    <TextBlock x:Name="Status" Foreground="#577267" FontSize="11" VerticalAlignment="Center"/>
+                </StackPanel>
+                <TextBlock x:Name="FootHint" Grid.Column="1" Classes="meta" VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

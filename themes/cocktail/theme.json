@@ -1,0 +1,37 @@
+{
+  "name": "Cocktail",
+  "layouts": {
+    "title": {
+      "masks": [
+        { "x": 493, "y": 167, "width": 220, "height": 132 },
+        { "x": 545, "y": 573, "width": 110, "height": 37 }
+      ],
+      "elements": [
+        { "id": "title", "content": "Titre", "x": 250, "y": 158, "width": 700, "height": 81, "fontSize": 72, "bold": true, "align": "center", "color": "#151515" },
+        { "id": "subtitle", "content": "Sous-titre", "x": 250, "y": 256, "width": 700, "height": 65, "fontSize": 36, "align": "center", "color": "#151515" },
+        { "id": "footer", "content": "Pied de page", "x": 250, "y": 582, "width": 700, "height": 40, "fontSize": 18, "align": "center", "color": "#555555" }
+      ]
+    },
+    "slide": {
+      "masks": [
+        { "x": 63, "y": 58, "width": 219, "height": 137 },
+        { "x": 60, "y": 570, "width": 115, "height": 38 }
+      ],
+      "elements": [
+        { "id": "title", "content": "Titre", "x": 71, "y": 54, "width": 695, "height": 81, "fontSize": 68, "bold": true, "color": "#151515" },
+        { "id": "subtitle", "content": "Sous-titre", "x": 71, "y": 145, "width": 695, "height": 62, "fontSize": 34, "color": "#151515" },
+        { "id": "body", "content": "- Premier point\n- Deuxième point", "x": 71, "y": 239, "width": 670, "height": 295, "fontSize": 31, "color": "#151515" },
+        { "id": "footer", "content": "Pied de page", "x": 71, "y": 582, "width": 690, "height": 40, "fontSize": 18, "color": "#555555" }
+      ]
+    },
+    "end": {
+      "masks": [
+        { "x": 488, "y": 438, "width": 224, "height": 145 }
+      ],
+      "elements": [
+        { "id": "title", "content": "Merci", "x": 250, "y": 433, "width": 700, "height": 83, "fontSize": 70, "bold": true, "align": "center", "color": "#151515" },
+        { "id": "subtitle", "content": "Questions ?", "x": 250, "y": 535, "width": 700, "height": 59, "fontSize": 36, "align": "center", "color": "#151515" }
+      ]
+    }
+  }
+}
