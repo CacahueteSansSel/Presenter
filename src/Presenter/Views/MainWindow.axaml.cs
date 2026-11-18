@@ -14,6 +14,8 @@ namespace Presenter.Views;
 internal sealed partial class MainWindow : Window
 {
     private readonly IReadOnlyList<SlideTheme> _themes = SlideTheme.Discover();
+    private readonly NativeMenuItem? _nativeUndo;
+    private readonly NativeMenuItem? _nativeRedo;
     private readonly SlideTheme _fallbackTheme = new() { Id = "signal", Name = "Signal" };
     private readonly DispatcherTimer _syntaxTimer = new() { Interval = TimeSpan.FromMilliseconds(310) };
     private readonly Dictionary<Guid, SlideSurface> _thumbnails = [];
@@ -47,6 +49,12 @@ internal sealed partial class MainWindow : Window
         _savedSnapshot = _history.Current;
 
         InitializeComponent();
+        if (OperatingSystem.IsMacOS())
+        {
+            _nativeUndo = Resources["NativeUndo"] as NativeMenuItem;
+            _nativeRedo = Resources["NativeRedo"] as NativeMenuItem;
+        }
+
         ConfigureChrome();
         ApiChips.ItemsSource = FlowApi.Methods.Where(method => method.Name != "beforePresent" && method.Name != "afterPresent").ToArray();
         ConnectInspector();
@@ -104,6 +112,11 @@ internal sealed partial class MainWindow : Window
             WindowDecorations = WindowDecorations.Full;
             TopLeft.Margin = new Thickness(84, 0, 0, 0);
             WindowButtons.IsVisible = false;
+            WindowMenuBar.IsVisible = false;
+        }
+        else
+        {
+            NativeMenu.SetMenu(this, null);
         }
 
         FootHint.Text = macOS ? "⌘S  Enregistrer     F5  Présenter" : "Ctrl+S  Enregistrer     F5  Présenter";
@@ -113,17 +126,25 @@ internal sealed partial class MainWindow : Window
     private void OnNextSlide(object? sender, RoutedEventArgs args) => Navigate(1);
     private void OnUndo(object? sender, RoutedEventArgs args) => ChangeHistory(false);
     private void OnRedo(object? sender, RoutedEventArgs args) => ChangeHistory(true);
+    private void OnNativeUndo(object? sender, EventArgs args) => ChangeHistory(false);
+    private void OnNativeRedo(object? sender, EventArgs args) => ChangeHistory(true);
     private void OnPresentDeck(object? sender, RoutedEventArgs args) => Present(fromBeginning: true);
     private void OnTestSlide(object? sender, RoutedEventArgs args) => Present(fromBeginning: false);
     private void OnMinimize(object? sender, RoutedEventArgs args) => WindowState = WindowState.Minimized;
     private void OnMaximize(object? sender, RoutedEventArgs args) =>
         WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
     private void OnClose(object? sender, RoutedEventArgs args) => Close();
-    private async void OnNew(object? sender, RoutedEventArgs args) => await RunFileAsync(NewAsync);
-    private async void OnOpen(object? sender, RoutedEventArgs args) => await RunFileAsync(ChooseOpenAsync);
-    private async void OnSave(object? sender, RoutedEventArgs args) => await RunFileAsync(() => SaveAsync());
-    private async void OnSaveAs(object? sender, RoutedEventArgs args) => await RunFileAsync(() => SaveAsync(saveAs: true));
-    private async void OnOpenThemeFolder(object? sender, RoutedEventArgs args) => await OpenThemeFolderAsync();
+    private void OnNew(object? sender, RoutedEventArgs args) => OnNativeNew(sender, args);
+    private void OnOpen(object? sender, RoutedEventArgs args) => OnNativeOpen(sender, args);
+    private void OnSave(object? sender, RoutedEventArgs args) => OnNativeSave(sender, args);
+    private void OnSaveAs(object? sender, RoutedEventArgs args) => OnNativeSaveAs(sender, args);
+    private void OnOpenThemeFolder(object? sender, RoutedEventArgs args) => OnNativeOpenThemeFolder(sender, args);
+
+    private async void OnNativeNew(object? sender, EventArgs args) => await RunFileAsync(NewAsync);
+    private async void OnNativeOpen(object? sender, EventArgs args) => await RunFileAsync(ChooseOpenAsync);
+    private async void OnNativeSave(object? sender, EventArgs args) => await RunFileAsync(() => SaveAsync());
+    private async void OnNativeSaveAs(object? sender, EventArgs args) => await RunFileAsync(() => SaveAsync(saveAs: true));
+    private async void OnNativeOpenThemeFolder(object? sender, EventArgs args) => await OpenThemeFolderAsync();
 
     private void OnOpeningLayouts(object? sender, EventArgs args)
     {
@@ -355,12 +376,12 @@ internal sealed partial class MainWindow : Window
         {
             Engine.PrepareScript(CurrentSlide.Script);
             ScriptStatus.Text = "Syntaxe JavaScript valide";
-            ScriptStatus.Foreground = Ui.Brush("#347955");
+            ScriptStatus.Classes.Set("error", false);
         }
         catch (Exception exception)
         {
             ScriptStatus.Text = exception.Message;
-            ScriptStatus.Foreground = Ui.Brush("#AD273C");
+            ScriptStatus.Classes.Set("error", true);
         }
     }
 
@@ -369,10 +390,17 @@ internal sealed partial class MainWindow : Window
         DeckTitle.Text = _deck.Name + (IsDirty ? " *" : "");
         Title = $"Presenter — {_deck.Name}";
         Status.Text = message ?? (IsDirty ? "Modifications à enregistrer" : _path == null ? "Présentation locale" : "Présentation enregistrée");
-        StatusDot.Background = error ? Ui.Brush("#AD273C") : IsDirty ? Ui.Brush("#DBA041") : Ui.Brush("#329467");
+        StatusDot.Classes.Set("dirty", IsDirty);
+        StatusDot.Classes.Set("error", error);
 
-        UndoButton.IsEnabled = _history.CanUndo;
-        RedoButton.IsEnabled = _history.CanRedo;
+        UndoMenuItem.IsEnabled = _history.CanUndo;
+        RedoMenuItem.IsEnabled = _history.CanRedo;
+
+        if (_nativeUndo != null)
+            _nativeUndo.IsEnabled = _history.CanUndo;
+
+        if (_nativeRedo != null)
+            _nativeRedo.IsEnabled = _history.CanRedo;
     }
 
     private void Record(string? group = null)

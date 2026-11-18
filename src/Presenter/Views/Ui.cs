@@ -15,9 +15,9 @@ internal static class Ui
 
     public static readonly FontFamily Inter = new("avares://Avalonia.Fonts.Inter/Assets#Inter");
     public static readonly FontFamily Mono = new("avares://Presenter/Assets/Fonts#JetBrains Mono");
-    public static readonly IBrush Ink = Brush("#182820");
-    public static readonly IBrush Muted = Brush("#577267");
-    public static readonly IBrush Line = Brush("#DFE7E1");
+    public static readonly IBrush Ink = Brush("#000000");
+    public static readonly IBrush Muted = Brush("#656565");
+    public static readonly IBrush Line = Brush("#E3E3E3");
     public static readonly IBrush Green = Brush("#1D8059");
 
     public static IBrush Brush(string color)

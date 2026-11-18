@@ -11,7 +11,6 @@ using AvaloniaEdit.Highlighting;
 using AvaloniaEdit.Highlighting.Xshd;
 using AvaloniaEdit.Indentation;
 using Presenter.Flow;
-using Presenter.Views;
 
 namespace Presenter.Editor;
 
@@ -27,12 +26,7 @@ internal sealed partial class FlowEditor : TextEditor
         using XmlReader reader = XmlReader.Create(stream);
 
         SyntaxHighlighting = HighlightingLoader.Load(reader, HighlightingManager.Instance);
-        FontFamily = Ui.Mono;
-        FontSize = 13;
         ShowLineNumbers = true;
-        LineNumbersForeground = Ui.Brush("#729281");
-        Foreground = Ui.Brush("#243B31");
-        Background = Ui.Brush("#F7FAF8");
         HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto;
         VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto;
 

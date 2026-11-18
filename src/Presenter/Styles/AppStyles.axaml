@@ -1,0 +1,405 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:views="using:Presenter.Views"
+        xmlns:edit="using:AvaloniaEdit"
+        xmlns:editing="using:AvaloniaEdit.Editing"
+        xmlns:editor="using:Presenter.Editor">
+    <Design.PreviewWith>
+        <Grid Width="740" Classes="workspace" RowDefinitions="Auto,Auto,Auto,Auto">
+            <Border Classes="chromeSurface ruleBelow" Padding="16,12">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Classes="toolContent">
+                        <TextBlock Classes="documentTitle" Text="Aperçu du thème"/>
+                        <Border Classes="titleDot"/>
+                        <TextBlock Classes="meta" Text="Presenter"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                        <Button Classes="tool outline">
+                            <StackPanel Classes="toolContent">
+                                <views:IconGlyph Glyph="save"/>
+                                <TextBlock Text="Enregistrer"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Classes="primary">
+                            <StackPanel Classes="toolContent">
+                                <views:IconGlyph Glyph="presentation-play"/>
+                                <TextBlock Text="Présenter"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border Grid.Row="1" Classes="toolbarSurface ruleBelow" Padding="12,6">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Menu Classes="windowMenu" VerticalAlignment="Center">
+                        <MenuItem Header="_Fichier">
+                            <MenuItem Header="Nouveau"/>
+                            <MenuItem Header="Ouvrir…"/>
+                            <Separator/>
+                            <MenuItem Header="Enregistrer" InputGesture="Ctrl+S"/>
+                        </MenuItem>
+                        <MenuItem Header="_Édition">
+                            <MenuItem Header="Annuler" InputGesture="Ctrl+Z" IsEnabled="False"/>
+                        </MenuItem>
+                    </Menu>
+                    <Border Classes="separator"/>
+                    <Button Classes="tool">
+                        <StackPanel Classes="toolContent">
+                            <views:IconGlyph Glyph="image"/>
+                            <TextBlock Text="Image"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Classes="tool active">
+                        <StackPanel Classes="toolContent">
+                            <views:IconGlyph Glyph="code-block"/>
+                            <TextBlock Text="Code Flow"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Classes="tool" Content="Annuler" IsEnabled="False"/>
+                </StackPanel>
+            </Border>
+
+            <Grid Grid.Row="2" ColumnDefinitions="*,*">
+                <Border Classes="slideSidebar ruleRight" Padding="16">
+                    <StackPanel Spacing="8">
+                        <TextBlock Classes="sectionTitle" Text="Diapositives"/>
+                        <TextBlock Classes="meta" Text="02 DIAPOS"/>
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                            <Button Classes="tool slideCard active">
+                                <StackPanel Spacing="6">
+                                    <Border Classes="slideThumbnail" Height="60">
+                                        <TextBlock Classes="documentTitle" Text="Introduction"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock Classes="slideCaption" Text="01 Introduction"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Grid.Column="1" Classes="tool slideCard">
+                                <StackPanel Spacing="6">
+                                    <Border Classes="slideThumbnail" Height="60">
+                                        <TextBlock Classes="documentTitle" Text="Démo"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock Classes="slideCaption" Text="02 Démo"/>
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+                        <Border Classes="inspectorDivider"/>
+                        <Grid Classes="workspace" Height="100">
+                            <Border Classes="stageFrame" Margin="12">
+                                <TextBlock Classes="mutedNote" Text="Zone de travail"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </Grid>
+                        <Border Classes="projectionError">
+                            <TextBlock Classes="projectionErrorMessage" Text="Erreur de projection"/>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="1" Classes="chromeSurface" Padding="16">
+                    <StackPanel Spacing="8">
+                        <TextBlock Classes="sectionTitle" Text="Inspecteur"/>
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                            <StackPanel Spacing="4">
+                                <TextBlock Classes="fieldLabel" Text="Titre"/>
+                                <TextBox Text="Introduction"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Spacing="4">
+                                <TextBlock Classes="fieldLabel" Text="Thème"/>
+                                <ComboBox SelectedIndex="0">
+                                    <ComboBoxItem Content="Signal"/>
+                                    <ComboBoxItem Content="Cocktail"/>
+                                </ComboBox>
+                            </StackPanel>
+                        </Grid>
+                        <TextBox PlaceholderText="Notes de présentation" IsEnabled="False"/>
+                        <Border Classes="inspectorDivider"/>
+                        <TextBlock Classes="label" Text="Code Flow"/>
+                        <Border Classes="codeFrame" Height="92" Padding="1,8,1,3" ClipToBounds="True">
+                            <editor:FlowEditor Classes="codeFlow" IsReadOnly="True"
+                                               Text="async function beforePresent() {&#10;    await fadeIn(&quot;titre&quot;, 500);&#10;}"/>
+                        </Border>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Button Classes="tool outline apiHint">
+                                <TextBlock Classes="meta" Text="fadeIn()"/>
+                            </Button>
+                            <TextBlock Classes="scriptStatus" Text="Syntaxe valide" VerticalAlignment="Center"/>
+                            <TextBlock Classes="scriptStatus error" Text="Erreur de syntaxe" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <Border Grid.Row="3" Classes="toolbarSurface ruleAbove" Padding="16,10">
+                <StackPanel Orientation="Horizontal" Spacing="20">
+                    <StackPanel Classes="toolContent">
+                        <Border Classes="statusDot"/>
+                        <TextBlock Classes="statusText" Text="Enregistré"/>
+                    </StackPanel>
+                    <StackPanel Classes="toolContent">
+                        <Border Classes="statusDot dirty"/>
+                        <TextBlock Classes="statusText" Text="Modifications en cours"/>
+                    </StackPanel>
+                    <StackPanel Classes="toolContent">
+                        <Border Classes="statusDot error"/>
+                        <TextBlock Classes="statusText" Text="Échec de la sauvegarde"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Design.PreviewWith>
+
+    <Styles.Resources>
+        <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="#000000"/>
+        <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="#222222"/>
+        <Color x:Key="SystemAccentColor">#000000</Color>
+
+        <FontFamily x:Key="AppFont">avares://Avalonia.Fonts.Inter/Assets#Inter</FontFamily>
+        <FontFamily x:Key="MonoFont">avares://Presenter/Assets/Fonts#JetBrains Mono</FontFamily>
+        <SolidColorBrush x:Key="MutedBrush" Color="#222222"/>
+        <SolidColorBrush x:Key="DividerBrush" Color="#DFE7E1"/>
+        <SolidColorBrush x:Key="SurfaceBrush" Color="#FEFFFE"/>
+        <SolidColorBrush x:Key="ToolbarBrush" Color="#FBFDFB"/>
+        <SolidColorBrush x:Key="CodeSurfaceBrush" Color="#F7FAF8"/>
+        <SolidColorBrush x:Key="ErrorBrush" Color="#AD273C"/>
+    </Styles.Resources>
+
+    <Style Selector="Window">
+        <Setter Property="FontFamily" Value="{StaticResource AppFont}"/>
+        <Setter Property="Foreground" Value="#000000"/>
+    </Style>
+    <Style Selector="Window.editorWindow">
+        <Setter Property="Background" Value="#F6F8F6"/>
+    </Style>
+    <Style Selector="Window.dialog">
+        <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+    </Style>
+    <Style Selector="Window.projection">
+        <Setter Property="Background" Value="#111111"/>
+    </Style>
+    <Style Selector="Border.chromeSurface">
+        <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+    </Style>
+    <Style Selector="Border.toolbarSurface">
+        <Setter Property="Background" Value="{StaticResource ToolbarBrush}"/>
+    </Style>
+    <Style Selector="Border.slideSidebar">
+        <Setter Property="Background" Value="#F9FBF9"/>
+    </Style>
+    <Style Selector="Grid.workspace">
+        <Setter Property="Background" Value="#EEF3EF"/>
+    </Style>
+    <Style Selector="Border.titleDragRegion">
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <Style Selector="Border.ruleAbove, Border.ruleBelow, Border.ruleLeft, Border.ruleRight">
+        <Setter Property="BorderBrush" Value="{StaticResource DividerBrush}"/>
+    </Style>
+    <Style Selector="Border.ruleAbove">
+        <Setter Property="BorderThickness" Value="0,1,0,0"/>
+    </Style>
+    <Style Selector="Border.ruleBelow">
+        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+    </Style>
+    <Style Selector="Border.ruleLeft">
+        <Setter Property="BorderThickness" Value="1,0,0,0"/>
+    </Style>
+    <Style Selector="Border.ruleRight">
+        <Setter Property="BorderThickness" Value="0,0,1,0"/>
+    </Style>
+    <Style Selector="Border.separator">
+        <Setter Property="Width" Value="1"/>
+        <Setter Property="Height" Value="22"/>
+        <Setter Property="Background" Value="{StaticResource DividerBrush}"/>
+        <Setter Property="Margin" Value="3,0"/>
+    </Style>
+    <Style Selector="Border.inspectorDivider">
+        <Setter Property="Height" Value="1"/>
+        <Setter Property="Background" Value="{StaticResource DividerBrush}"/>
+        <Setter Property="Margin" Value="0,6"/>
+    </Style>
+    <Style Selector="Border.titleDot">
+        <Setter Property="Width" Value="4"/>
+        <Setter Property="Height" Value="4"/>
+        <Setter Property="CornerRadius" Value="2"/>
+        <Setter Property="Background" Value="#33000000"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="Border.slideThumbnail">
+        <Setter Property="CornerRadius" Value="4"/>
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="BorderBrush" Value="#AAAAAA"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+    <Style Selector="Border.stageFrame">
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="BoxShadow" Value="0 10 30 0 #1831473D"/>
+        <Setter Property="BorderBrush" Value="#BCD0C4"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+    <Style Selector="Border.codeFrame">
+        <Setter Property="BorderBrush" Value="#DBE7DF"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Background" Value="{StaticResource CodeSurfaceBrush}"/>
+        <Setter Property="CornerRadius" Value="8"/>
+    </Style>
+    <Style Selector="Border.projectionError">
+        <Setter Property="Background" Value="{StaticResource ErrorBrush}"/>
+        <Setter Property="CornerRadius" Value="7"/>
+        <Setter Property="Padding" Value="15,11"/>
+    </Style>
+
+    <Style Selector="views|IconGlyph">
+        <Setter Property="Width" Value="16"/>
+        <Setter Property="Height" Value="16"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="IsHitTestVisible" Value="False"/>
+    </Style>
+    <Style Selector="StackPanel.toolContent">
+        <Setter Property="Orientation" Value="Horizontal"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Spacing" Value="6"/>
+    </Style>
+    <Style Selector="Button.tool">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="CornerRadius" Value="7"/>
+        <Setter Property="Padding" Value="8,6"/>
+        <Setter Property="MinHeight" Value="32"/>
+        <Setter Property="FontSize" Value="12"/>
+    </Style>
+    <Style Selector="Button.tool:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="#EEEEEE"/>
+        <Setter Property="Foreground" Value="#000000"/>
+    </Style>
+    <Style Selector="Button.tool:disabled /template/ ContentPresenter">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="Opacity" Value="0.4"/>
+    </Style>
+    <Style Selector="Button.active">
+        <Setter Property="Background" Value="#DDDDDD"/>
+        <Setter Property="Foreground" Value="#000000"/>
+    </Style>
+    <Style Selector="Button.slideCard">
+        <Setter Property="Padding" Value="6"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+    </Style>
+    <Style Selector="Button.slideCard.active">
+        <Setter Property="Background" Value="#DDDDDD"/>
+        <Setter Property="BorderBrush" Value="#999999"/>
+    </Style>
+    <Style Selector="Button.outline">
+        <Setter Property="Background" Value="#FFFFFF"/>
+        <Setter Property="BorderBrush" Value="#DDDDDD"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+    <Style Selector="Button.apiHint">
+        <Setter Property="Padding" Value="5,2"/>
+        <Setter Property="MinHeight" Value="22"/>
+    </Style>
+    <Style Selector="Button.primary">
+        <Setter Property="Background" Value="#000000"/>
+        <Setter Property="Foreground" Value="#FFFFFF"/>
+        <Setter Property="Padding" Value="12,7"/>
+        <Setter Property="CornerRadius" Value="7"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+    <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="#000000"/>
+        <Setter Property="Foreground" Value="#FFFFFF"/>
+    </Style>
+    <Style Selector="Button.primary views|IconGlyph">
+        <Setter Property="Ink" Value="White"/>
+    </Style>
+
+    <Style Selector="TextBlock.documentTitle">
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+    <Style Selector="TextBlock.sectionTitle">
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+    <Style Selector="TextBlock.slideCaption, TextBlock.fieldLabel">
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+    </Style>
+    <Style Selector="TextBlock.fieldLabel, TextBlock.mutedNote, TextBlock.statusText, TextBlock.dialogMessage">
+        <Setter Property="Foreground" Value="{StaticResource MutedBrush}"/>
+    </Style>
+    <Style Selector="TextBlock.mutedNote">
+        <Setter Property="FontSize" Value="12"/>
+    </Style>
+    <Style Selector="TextBlock.meta">
+        <Setter Property="FontFamily" Value="{StaticResource MonoFont}"/>
+        <Setter Property="FontSize" Value="10"/>
+        <Setter Property="Foreground" Value="{StaticResource MutedBrush}"/>
+    </Style>
+    <Style Selector="TextBlock.label">
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FontSize" Value="12"/>
+    </Style>
+    <Style Selector="TextBlock.dialogTitle">
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+    <Style Selector="TextBlock.dialogMessage">
+        <Setter Property="FontSize" Value="13"/>
+    </Style>
+    <Style Selector="TextBlock.projectionErrorMessage">
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+    <Style Selector="TextBlock.statusText, TextBlock.scriptStatus">
+        <Setter Property="FontSize" Value="11"/>
+    </Style>
+    <Style Selector="TextBlock.scriptStatus">
+        <Setter Property="Foreground" Value="#000000"/>
+    </Style>
+    <Style Selector="TextBlock.scriptStatus.error">
+        <Setter Property="Foreground" Value="{StaticResource ErrorBrush}"/>
+    </Style>
+    <Style Selector="Border.statusDot">
+        <Setter Property="Width" Value="6"/>
+        <Setter Property="Height" Value="6"/>
+        <Setter Property="CornerRadius" Value="3"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Background" Value="#329467"/>
+    </Style>
+    <Style Selector="Border.statusDot.dirty">
+        <Setter Property="Background" Value="#DBA041"/>
+    </Style>
+    <Style Selector="Border.statusDot.error">
+        <Setter Property="Background" Value="{StaticResource ErrorBrush}"/>
+    </Style>
+
+    <Style Selector="Menu.windowMenu">
+        <Setter Property="FontSize" Value="12"/>
+    </Style>
+    <Style Selector="TextBox">
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="CornerRadius" Value="6"/>
+    </Style>
+    <Style Selector="ComboBox">
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+    </Style>
+    <Style Selector="edit|TextEditor.codeFlow">
+        <Setter Property="FontFamily" Value="{StaticResource MonoFont}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="LineNumbersForeground" Value="#777777"/>
+        <Setter Property="Foreground" Value="#000000"/>
+        <Setter Property="Background" Value="{StaticResource CodeSurfaceBrush}"/>
+    </Style>
+    <Style Selector="edit|TextEditor.codeFlow editing|TextArea">
+        <Setter Property="SelectionBrush" Value="#CDCDCD"/>
+    </Style>
+</Styles>
